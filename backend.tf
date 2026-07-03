@@ -3,7 +3,7 @@ terraform {
     bucket = "my-terraform-state-mohan-bucket" 
     key = "eks-cluster/terraform.tfstate" 
     region = "eu-north-1" 
-    use_lockfile = "terraform-lock-table"
-    encrypt = true 
+    dynamodb_table = "terraform-lock-table"
+     encrypt = true 
         } 
     }
