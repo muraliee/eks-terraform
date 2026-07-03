@@ -13,7 +13,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/muraliee/eks-terraform.git'
+                git branch: 'main', url:'https://github.com/muraliee/eks-terraform.git'
             }
         }
 
