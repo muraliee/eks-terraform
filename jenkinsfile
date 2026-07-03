@@ -11,7 +11,7 @@ pipeline {
 
         stage('Checkout') {
             steps {
-                git 'https://github.com/your-repo/eks-terraform.git'
+                git 'https://github.com/muraliee/eks-terraform.git'
             }
         }
 
