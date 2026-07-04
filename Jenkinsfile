@@ -1,69 +1,91 @@
 pipeline {
     agent any
 
-    environment 
-      { 
-       AWS_CREDS = credentials('aws-cred') 
-       AWS_ACCESS_KEY_ID = "${AWS_CREDS_USR}" 
-       AWS_SECRET_ACCESS_KEY = "${AWS_CREDS_PSW}" 
-       AWS_DEFAULT_REGION = 'eu-north-1' 
-     }
+    environment {
+        AWS_DEFAULT_REGION = 'eu-north-1'
+    }
 
     stages {
 
         stage('Checkout') {
             steps {
-                git branch: 'main', url:'https://github.com/muraliee/eks-terraform.git'
+                git branch: 'main', url: 'https://github.com/muraliee/eks-terraform.git'
             }
         }
 
         stage('Terraform Init') {
             steps {
-                
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-cred',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
                     sh 'terraform init'
-                
+                }
             }
         }
 
         stage('Terraform Validate') {
             steps {
-                
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-cred',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
                     sh 'terraform validate'
-                
+                }
             }
         }
 
         stage('Terraform Plan') {
             steps {
-                
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-cred',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
                     sh 'terraform plan'
-                
+                }
             }
         }
 
-       
-
         stage('Terraform Apply') {
             steps {
-                
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-cred',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
                     sh 'terraform apply -auto-approve'
-                
+                }
             }
         }
 
         stage('Configure Kubectl') {
             steps {
-                sh '''
-                aws eks update-kubeconfig \
-                --region ap-south-1 \
-                --name jenkins-eks
-                '''
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-cred',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    sh '''
+                    aws eks update-kubeconfig \
+                        --region eu-north-1 \
+                        --name my-eks-cluster
+                    '''
+                }
             }
         }
 
         stage('Verify Cluster') {
             steps {
-                sh 'kubectl get nodes'
+                withCredentials([usernamePassword(
+                    credentialsId: 'aws-cred',
+                    usernameVariable: 'AWS_ACCESS_KEY_ID',
+                    passwordVariable: 'AWS_SECRET_ACCESS_KEY'
+                )]) {
+                    sh 'kubectl get nodes'
+                }
             }
         }
     }
